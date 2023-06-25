@@ -5,6 +5,7 @@ export const AppContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 20px;
+  margin-bottom: 60px;
 `;
 
 export const IndexContainer = styled.div`

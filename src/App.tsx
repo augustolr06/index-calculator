@@ -43,24 +43,37 @@ function App() {
   const [report, setReport] = useState('')
 
   function handleGenerateReport() {
-    setReport(`
+    if (!PCT && !END && !IPL && !LG && !LC && !LS && !GA && !ML && !RA && !RPL) setReport('Nenhum índice calculado')
+    else setReport(`
       Relatório de índices de demonstrativos contábeis\n\n
       Índices de estrutura de capital:\n
-      - PCT: ${PCT + '%' || 'não calculado'}\n
-      - END: ${END + '%' || 'não calculado'}\n
-      - IPL: ${IPL + '%' || 'não calculado'}\n
-      \n\n\n
-      Índices de liquidez:\n\n
-      - LG: ${LG || 'não calculado'}\n
-      - LC: ${LC || 'não calculado'}\n
-      - LS: ${LS || 'não calculado'}\n
-      \n\n\n
-      Índices de rentabilidade:\n\n
-      - GA: ${GA + '%' || 'não calculado'}\n
-      - ML: ${ML + '%' || 'não calculado'}\n
-      - RA: ${RA + '%' || 'não calculado'}\n
-      - RPL: ${RPL + '%' || 'não calculado'}\n
+      - PCT: ${PCT ? PCT + '%' : 'não calculado'}\n
+      - END: ${END ? END + '%' : 'não calculado'}\n
+      - IPL: ${IPL ? IPL + '%' : 'não calculado'}\n\n
+      Índices de liquidez:\n
+      - LG: ${LG ? LG + '%' : 'não calculado'}\n
+      - LC: ${LC ? LC + '%' : 'não calculado'}\n
+      - LS: ${LS ? LS + '%' : 'não calculado'}\n\n
+      Índices de rentabilidade:\n
+      - GA: ${GA ? GA + '%' : 'não calculado'}\n
+      - ML: ${ML ? ML + '%' : 'não calculado'}\n
+      - RA: ${RA ? RA + '%' : 'não calculado'}\n
+      - RPL: ${RPL ? RPL + '%' : 'não calculado'}\n
     `)
+  }
+
+  function handleClearAllResults() {
+    setPCT('')
+    setEND('')
+    setIPL('')
+    setLG('')
+    setLC('')
+    setLS('')
+    setGA('')
+    setML('')
+    setRA('')
+    setRPL('')
+    setReport('')
   }
 
 
@@ -416,33 +429,33 @@ function App() {
         </IndexItem>
         <IndexItem>
           <FormTitle>Liquidez Seca - LS</FormTitle>
-          <Form onSubmit={handleSubmitLC(handleCalculateLS)}>
+          <Form onSubmit={handleSubmitLS(handleCalculateLS)}>
             <TextField
               id="ac"
               label="Ativo Circulante"
               size="sm"
               type="number"
-              error={!!errorsLC.ac}
-              helpMessage={errorsLC.ac && 'Este campo é obrigatório'}
-              {...registerLC('ac', { required: true, valueAsNumber: true })}
+              error={!!errorsLS.ac}
+              helpMessage={errorsLS.ac && 'Este campo é obrigatório'}
+              {...registerLS('ac', { required: true, valueAsNumber: true })}
             />
             <TextField
               id="est"
               label="Estoque"
               size="sm"
               type="number"
-              error={!!errorsLC.est}
-              helpMessage={errorsLC.est && 'Este campo é obrigatório'}
-              {...registerLC('est', { required: true, valueAsNumber: true })}
+              error={!!errorsLS.est}
+              helpMessage={errorsLS.est && 'Este campo é obrigatório'}
+              {...registerLS('est', { required: true, valueAsNumber: true })}
             />
             <TextField
               id="pc"
               label="Passivo Circulante"
               size="sm"
               type="number"
-              error={!!errorsLC.pc}
-              helpMessage={errorsLC.pc && 'Este campo é obrigatório'}
-              {...registerLC('pc', { required: true, valueAsNumber: true })}
+              error={!!errorsLS.pc}
+              helpMessage={errorsLS.pc && 'Este campo é obrigatório'}
+              {...registerLS('pc', { required: true, valueAsNumber: true })}
             />
             <Button type="submit">Calcular</Button>
           <ResultContainer>
@@ -592,7 +605,16 @@ function App() {
           </Form>
         </IndexItem>
       </IndexContainer>
-      {/* Fornecer um botão para gerar um relatório com os resultados dos cálculos */}
+      <Button
+        color='#6c7e86'
+        onClick={handleClearAllResults}
+        style={{
+          alignSelf: 'center',
+          marginBottom: '20px'
+          }}
+      >
+        Limpar todos os resultados
+      </Button>
       <Button
         onClick={handleGenerateReport}
       >
