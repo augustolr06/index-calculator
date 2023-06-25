@@ -617,6 +617,10 @@ function App() {
       </Button>
       <Button
         onClick={handleGenerateReport}
+        style={{
+          alignSelf: 'center',
+          marginBottom: '20px'
+          }}
       >
         {report ? 'Atualizar relatório' : 'Gerar relatório'}
       </Button>
