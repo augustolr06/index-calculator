@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { jsPDF } from "jspdf";
 
-import { AppContainer, Form, FormTitle, IndexContainer, IndexItem, ResultContainer, Subtitle, Title, PeriodWrapper, SButton } from './App.styles.ts'
+import { AppContainer, Form, FormTitle, IndexContainer, IndexItem, ResultContainer, Subtitle, Title, PeriodWrapper, SButton, Tip } from './App.styles.ts'
 
 import { IconButton, Select, SelectItem, TextField, Button } from '@nexds/web'
 
@@ -240,24 +240,26 @@ function App() {
     doc.text(`Rentabilidade do ativo: ${RA !== '' ? RA + '%' : 'Não calculado' }`, 15, 115)
     doc.text(`Rentabilidade do patrimônio líquido: ${RPL !== '' ? RPL + '%' : 'Não calculado' }`, 15, 120)
 
-    doc.save('relatorio.pdf')
+    doc.save(`[${period}] - Relatorio de Indices Contabeis.pdf`)
   }
 
   return (
     <AppContainer>
       <Title>Calculadora de índices contábeis</Title>
-      <li>
-        Informe o período que deseja calcular os índices e preencha os campos abaixo. Utilize cada seção para calcular os índices de acordo com a sua necessidade.
-      </li>
-      <li>
-        Após preencher os campos, clique no botão "Gerar relatório" para gerar um PDF com os índices calculados.
-      </li>
-      <li>
-        É possível gerar um relatório com os índices calculados sem preencher todos os campos. Nesse caso, os índices não calculados serão mostrados como "Não calculado" no relatório.
-      </li>
-      <li>
-        O botão para gerar o relatório não será habilitado enquanto não for informado o período de referência.
-      </li>
+      <Tip>
+        <li>
+          Informe o período que deseja calcular os índices e preencha os campos abaixo. Utilize cada seção para calcular os índices de acordo com a sua necessidade.
+        </li>
+        <li>
+          Após preencher os campos, clique no botão "Gerar relatório" para gerar um PDF com os índices calculados.
+        </li>
+        <li>
+          É possível gerar um relatório sem a necessidade de calcular todos os índices. Nesse caso, os índices não calculados serão mostrados como "Não calculado" no relatório.
+        </li>
+        <li>
+          O botão para gerar o relatório não será habilitado enquanto não for informado o período de referência.
+        </li>
+      </Tip>
       <PeriodWrapper>
         <Subtitle>Período:</Subtitle>
         <Select

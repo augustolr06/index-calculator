@@ -4,7 +4,7 @@ export const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20px;
+  padding: 50px;
   margin-bottom: 60px;
 `;
 
@@ -33,8 +33,21 @@ export const IndexItem = styled.div`
   margin: 10px 0;
 `;
 
+export const Tip = styled.div`
+  width: 100%;
+  border: 1px solid ${({ theme }) => theme.colors.secondaryL1};
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+`;
+
 export const Title = styled.h1`
-  ${({ theme }) => theme.fonts.titleLG};
+  font-size: 2.5rem;
+  font-weight: 700;
   align-self: center;
   margin-bottom: 30px;
 `;
