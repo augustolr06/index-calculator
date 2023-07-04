@@ -59,8 +59,8 @@ export function lc(ac: number, pc: number): number {
 /** 2. liquidez:
  * 2.3. LS - liquidez seca: LS = (AC - EST) / PC
  */
-export function ls(ac: number, est: number, pc: number): number {
-  return (ac - est) / pc || 0;
+export function ls(acd: number, crc: number, pc: number): number {
+  return (acd + crc) / pc || 0;
 }
 
 /** 3. rentabilidade:
