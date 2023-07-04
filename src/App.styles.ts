@@ -8,6 +8,21 @@ export const AppContainer = styled.div`
   margin-bottom: 60px;
 `;
 
+export const PeriodWrapper = styled.div`
+  align-self: center;
+  width: 400px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 60px 0 20px;
+
+  & > h2 {
+    width: 200px;
+  }
+`;
+
 export const IndexContainer = styled.div`
   width: 100%;
   margin: 30px 0;
@@ -58,7 +73,7 @@ interface ButtonProps {
   variant?: "filled" | "outlined";
 }
 
-export const Button = styled.button<ButtonProps>`
+export const SButton = styled.button<ButtonProps>`
   width: fit-content;
   background-color: ${({ theme, color, variant }) =>
     variant === "outlined" ? "transparent" : color || theme.colors.primary};

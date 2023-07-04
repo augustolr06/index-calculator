@@ -29,8 +29,4 @@ export const GlobalStyle = createGlobalStyle`
       background-color: ${({ theme }) => theme.colors.secondaryL2};
     }
   }
-
-  ul, li {
-    list-style: none;
-  }
 `

@@ -1,13 +1,18 @@
 import { useState } from 'react'
-import { AppContainer, Button, Form, FormTitle, IndexContainer, IndexItem, ResultContainer, Subtitle, Title, ReportContainer } from './App.styles.ts'
 
-import { IconButton, TextField } from '@nexds/web'
+import { jsPDF } from "jspdf";
+
+import { AppContainer, Form, FormTitle, IndexContainer, IndexItem, ResultContainer, Subtitle, Title, PeriodWrapper, SButton } from './App.styles.ts'
+
+import { IconButton, Select, SelectItem, TextField, Button } from '@nexds/web'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
 
 import { end, ga, ipl, lc, lg, ls, ml, pct, ra, rpl } from './utils/calculate.ts'
+
+const periods = ["2023.4", "2023.3", "2023.2", "2023.1", "2022.4", "2022.3", "2022.2", "2022.1", "2021.4", "2021.3", "2021.2", "2021.1", "2020.4", "2020.3", "2020.2", "2020.1", "2019.4", "2019.3", "2019.2", "2019.1", "2018.4", "2018.3", "2018.2", "2018.1", "2017.4", "2017.3", "2017.2", "2017.1", "2016.4", "2016.3", "2016.2", "2016.1", "2015.4", "2015.3", "2015.2", "2015.1"]
 
 /**
  * - este app é uma calculadora de índices de demonstrativos contábeis.
@@ -27,8 +32,8 @@ import { end, ga, ipl, lc, lg, ls, ml, pct, ra, rpl } from './utils/calculate.ts
  * 3.3. RA - rentabilidade do ativo: RA = lucro líquido / ativo total
  * 3.4. RPL - rentabilidade do patrimônio líquido: RPL = lucro líquido / patrimônio líquido médio
  */
-
 function App() {
+
   const [PCT, setPCT] = useState('')
   const [END, setEND] = useState('')
   const [IPL, setIPL] = useState('')
@@ -40,27 +45,9 @@ function App() {
   const [RA, setRA] = useState('')
   const [RPL, setRPL] = useState('')
 
-  const [report, setReport] = useState('')
+  const [period, setPeriod] = useState('')
 
-  function handleGenerateReport() {
-    if (!PCT && !END && !IPL && !LG && !LC && !LS && !GA && !ML && !RA && !RPL) setReport('Nenhum índice calculado')
-    else setReport(`
-      Relatório de índices de demonstrativos contábeis\n\n
-      Índices de estrutura de capital:\n
-      - PCT: ${PCT ? PCT + '%' : 'não calculado'}\n
-      - END: ${END ? END + '%' : 'não calculado'}\n
-      - IPL: ${IPL ? IPL + '%' : 'não calculado'}\n\n
-      Índices de liquidez:\n
-      - LG: ${LG ? LG + '%' : 'não calculado'}\n
-      - LC: ${LC ? LC + '%' : 'não calculado'}\n
-      - LS: ${LS ? LS + '%' : 'não calculado'}\n\n
-      Índices de rentabilidade:\n
-      - GA: ${GA ? GA + '%' : 'não calculado'}\n
-      - ML: ${ML ? ML + '%' : 'não calculado'}\n
-      - RA: ${RA ? RA + '%' : 'não calculado'}\n
-      - RPL: ${RPL ? RPL + '%' : 'não calculado'}\n
-    `)
-  }
+  const [report, setReport] = useState('')
 
   function handleClearAllResults() {
     setPCT('')
@@ -225,11 +212,66 @@ function App() {
     setRPL(rpl(ll, plm).toFixed(2))
   }
 
+  const handleGenerateReport = () => {
+    const doc = new jsPDF()
 
+    doc.setFontSize(20)
+    doc.text('Relatório de índices contábeis', 55, 15)
+
+    // Ano de referência
+    doc.setFontSize(15)
+    doc.text(`Período de referência: ${period}`, 15, 30)
+
+    doc.setLineHeightFactor(1.5);
+    doc.setFontSize(10)
+    doc.text('1. ESTRUTURA DE CAPITAL', 15, 40)
+    doc.text(`Participação de capital de terceiros: ${PCT !== '' ? PCT + '%' : 'Não calculado' }`, 15, 45)
+    doc.text(`Endividamento: ${END !== '' ? END + '%' : 'Não calculado' }`, 15, 50)
+    doc.text(`Índice de participação de capital próprio: ${IPL !== '' ? IPL + '%' : 'Não calculado' }`, 15, 55)
+
+    doc.text('2. LIQUIDEZ', 15, 70)
+    doc.text(`Liquidez geral: ${LG !== '' ? LG : 'Não calculado' }`, 15, 75)
+    doc.text(`Liquidez corrente: ${LC !== '' ? LC : 'Não calculado' }`, 15, 80)
+    doc.text(`Liquidez seca: ${LS !== '' ? LS : 'Não calculado' }`, 15, 85)
+
+    doc.text('3. RENTABILIDADE', 15, 100)
+    doc.text(`Giro do ativo: ${GA !== '' ? GA + '%' : 'Não calculado' }`, 15, 105)
+    doc.text(`Margem líquida: ${ML !== '' ? ML + '%' : 'Não calculado' }`, 15, 110)
+    doc.text(`Rentabilidade do ativo: ${RA !== '' ? RA + '%' : 'Não calculado' }`, 15, 115)
+    doc.text(`Rentabilidade do patrimônio líquido: ${RPL !== '' ? RPL + '%' : 'Não calculado' }`, 15, 120)
+
+    doc.save('relatorio.pdf')
+  }
 
   return (
     <AppContainer>
       <Title>Calculadora de índices contábeis</Title>
+      <li>
+        Informe o período que deseja calcular os índices e preencha os campos abaixo. Utilize cada seção para calcular os índices de acordo com a sua necessidade.
+      </li>
+      <li>
+        Após preencher os campos, clique no botão "Gerar relatório" para gerar um PDF com os índices calculados.
+      </li>
+      <li>
+        É possível gerar um relatório com os índices calculados sem preencher todos os campos. Nesse caso, os índices não calculados serão mostrados como "Não calculado" no relatório.
+      </li>
+      <li>
+        O botão para gerar o relatório não será habilitado enquanto não for informado o período de referência.
+      </li>
+      <PeriodWrapper>
+        <Subtitle>Período:</Subtitle>
+        <Select
+          size="sm"
+          placeholder='Selecione o período'
+          value={period}
+          helpGutter={false}
+          onChange={(period) => setPeriod(period)}
+        >
+          {periods.map((period) => (
+            <SelectItem key={period} value={period} label={period} />
+          ))}
+        </Select>
+      </PeriodWrapper>
       <IndexContainer>
         <Subtitle>1. ESTRUTURA DE CAPITAL:</Subtitle>
         <IndexItem>
@@ -262,7 +304,7 @@ function App() {
               helpMessage={errorsPCT.pl && 'Este campo é obrigatório'}
               {...registerPCT('pl', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
             <ResultContainer>
               {PCT && <p>PCT: {PCT} %</p>}
             </ResultContainer>
@@ -295,7 +337,7 @@ function App() {
               helpMessage={errorsEND.pnc && 'Este campo é obrigatório'}
               {...registerEND('pnc', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
             <ResultContainer>
               {END && <p>END: {END} %</p>}
             </ResultContainer>
@@ -328,7 +370,7 @@ function App() {
               helpMessage={errorsIPL.pl && 'Este campo é obrigatório'}
               {...registerIPL('pl', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
             <ResultContainer>
               {IPL && <p>IPL: {IPL} %</p>}
             </ResultContainer>
@@ -382,7 +424,7 @@ function App() {
               helpMessage={errorsLG.pnc && 'Este campo é obrigatório'}
               {...registerLG('pnc', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
           <ResultContainer>
               {LG && <p>LG: {LG}</p>}
             </ResultContainer>
@@ -415,7 +457,7 @@ function App() {
               helpMessage={errorsLC.pc && 'Este campo é obrigatório'}
               {...registerLC('pc', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
           <ResultContainer>
               {LC && <p>LC: {LC}</p>}
             </ResultContainer>
@@ -457,7 +499,7 @@ function App() {
               helpMessage={errorsLS.pc && 'Este campo é obrigatório'}
               {...registerLS('pc', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
           <ResultContainer>
               {LS && <p>LS: {LS}</p>}
             </ResultContainer>
@@ -493,7 +535,7 @@ function App() {
               helpMessage={errorsGA.at && 'Este campo é obrigatório'}
               {...registerGA('at', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
           <ResultContainer>
               {GA && <p>GA: {GA} %</p>}
             </ResultContainer>
@@ -526,7 +568,7 @@ function App() {
               helpMessage={errorsML.vl && 'Este campo é obrigatório'}
               {...registerML('vl', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
           <ResultContainer>
               {ML && <p>ML: {ML} %</p>}
             </ResultContainer>
@@ -559,7 +601,7 @@ function App() {
               helpMessage={errorsRA.at && 'Este campo é obrigatório'}
               {...registerRA('at', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
           <ResultContainer>
               {RA && <p>RA: {RA} %</p>}
             </ResultContainer>
@@ -592,7 +634,7 @@ function App() {
               helpMessage={errorsRPL.plm && 'Este campo é obrigatório'}
               {...registerRPL('plm', { required: true, valueAsNumber: true })}
             />
-            <Button type="submit">Calcular</Button>
+            <SButton type="submit">Calcular</SButton>
             <ResultContainer>
               {RPL && <p>RPL: {RPL} %</p>}
             </ResultContainer>
@@ -606,31 +648,27 @@ function App() {
         </IndexItem>
       </IndexContainer>
       <Button
-        color='#6c7e86'
-        onClick={handleClearAllResults}
+        color='secondary'
+        variant='outline'
+        label='Limpar todos os resultados'
+        disabled={(!!LS || !!GA || !!ML || !!RA || !!RPL) ? false : true}
+        onPress={handleClearAllResults}
         style={{
           alignSelf: 'center',
           marginBottom: '20px'
           }}
-      >
-        Limpar todos os resultados
-      </Button>
+      />
       <Button
-        onClick={handleGenerateReport}
+        color='primary'
+        variant='filled'
+        label='Gerar relatório'
+        onPress={handleGenerateReport}
+        disabled={!period || period === ''}
         style={{
           alignSelf: 'center',
           marginBottom: '20px'
           }}
-      >
-        {report ? 'Atualizar relatório' : 'Gerar relatório'}
-      </Button>
-      <ReportContainer>
-        {report && (
-          report.split('\n').map((line, index) => (
-            <p key={index}>{line}</p>
-          ))
-        )}
-      </ReportContainer>
+      />
     </AppContainer>
   )
 }
